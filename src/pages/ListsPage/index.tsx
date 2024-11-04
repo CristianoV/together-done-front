@@ -39,7 +39,7 @@ const ListsContainer: React.FC = () => {
 
   // Estados para controle de paginação
   const [currentPage, setCurrentPage] = useState(1);
-  const [listsPerPage] = useState(5); // Número de listas por página
+  const [listsPerPage] = useState(10);
   const { data } = useGetListShared(user?.id || '', currentPage, listsPerPage);
 
   useEffect(() => {

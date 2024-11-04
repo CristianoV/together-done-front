@@ -234,14 +234,22 @@ const ListContainer: React.FC = () => {
                     {item.is_completed ? (
                       <button
                         className='bg-yellow-600 text-white py-1 px-2 rounded hover:bg-yellow-700 w-20'
-                        onClick={() => handleUpdateStatus(item.item_id)}
+                        onClick={() =>{
+                          console.log(item.item_id);
+                          
+                          handleUpdateStatus(item.item_id)
+                        }}
                       >
                         Reabrir
                       </button>
                     ) : (
                       <button
                         className='bg-green-600 text-white py-1 px-2 rounded hover:bg-green-700 w-20'
-                        onClick={() => handleUpdateStatus(item.item_id)}
+                        onClick={() =>{
+                          console.log(item.item_id);
+                          
+                          handleUpdateStatus(item.item_id)
+                        }}
                       >
                         Concluir
                       </button>
