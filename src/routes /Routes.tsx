@@ -2,8 +2,10 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import Login from '../pages/login';
 import Index from '../pages';
 import Home from '../pages/home';
+import ListsPage from '../pages/ListsPage';
 import Layout from '../components/Layout.tsx';
 import { useEffect, useState } from 'react';
+import ListContainer from '../pages/ListPage/index.tsx';
 
 export const AppRoutes = () => {
   const navigate = useNavigate();
@@ -35,6 +37,22 @@ export const AppRoutes = () => {
         element={
           <Layout user={user} onLogout={handleLogout}>
             <Index />
+          </Layout>
+        }
+      />
+      <Route
+        path='/list'
+        element={
+          <Layout user={user} onLogout={handleLogout}>
+            <ListsPage />
+          </Layout>
+        }
+      />
+      <Route
+        path='/list/:id'
+        element={
+          <Layout user={user} onLogout={handleLogout}>
+            <ListContainer />
           </Layout>
         }
       />

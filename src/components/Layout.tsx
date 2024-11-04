@@ -12,9 +12,9 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
   return (
-    <div>
+    <div className='bg-gray-100 min-h-screen'>
       <Navbar user={user} onLogout={onLogout} />
-      <main className="mt-16">{children}</main> {/* Espaço para Navbar fixa no topo */}
+      <main>{children}</main>
     </div>
   );
 };

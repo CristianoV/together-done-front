@@ -24,8 +24,8 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
         <button onClick={() => navigate('/')} className="hover:text-indigo-200">
           Home
         </button>
-        <button onClick={() => navigate('/about')} className="hover:text-indigo-200">
-          Sobre
+        <button onClick={() => navigate('/list')} className="hover:text-indigo-200">
+          Lista
         </button>
         <button onClick={() => navigate('/contact')} className="hover:text-indigo-200">
           Contato
