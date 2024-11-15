@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetListShared } from '../../hooks/useList';
-import { AiOutlineCheck, AiOutlineDelete } from 'react-icons/ai';
+import { useGetListShared, useCreateList } from '../../hooks/useList';
 
 interface Item {
   item_id: number;
@@ -42,6 +41,13 @@ const ListsContainer: React.FC = () => {
   const [listsPerPage] = useState(10);
   const { data } = useGetListShared(user?.id || '', currentPage, listsPerPage);
 
+  // Estados para criar uma nova lista
+  const [newListName, setNewListName] = useState('');
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { createList } = useCreateList();
+
   useEffect(() => {
     const accessToken = localStorage.getItem('access_token');
     const refreshToken = localStorage.getItem('refresh_token');
@@ -77,12 +83,62 @@ const ListsContainer: React.FC = () => {
     }
   };
 
+  const handleCreateList = async () => {
+    if (!newListName.trim()) {
+      setCreateError('O nome da lista não pode estar vazio.');
+      return;
+    }
+
+    setIsCreating(true);
+    setCreateError(null);
+
+    try {
+      await createList(newListName, false, Number(user?.id));
+      setNewListName('');
+      setShowSuccessModal(true);
+
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
+    } catch (error) {
+      setCreateError('Ocorreu um erro ao criar a lista.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   return (
     <div className='flex flex-col items-center'>
       <div className='bg-white shadow-md rounded-lg p-8 w-full'>
         <h1 className='text-4xl font-bold text-center text-indigo-600 mb-6'>
           Suas Listas
         </h1>
+
+        {/* Criar nova lista */}
+        <div className='mb-6'>
+          <h2 className='text-2xl font-bold text-indigo-600 mb-4'>
+            Criar Nova Lista
+          </h2>
+          <div className='flex items-center gap-4'>
+            <input
+              type='text'
+              placeholder='Nome da nova lista'
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+              className='flex-grow border border-gray-300 rounded py-2 px-4 focus:outline-none focus:border-indigo-500'
+            />
+            <button
+              onClick={handleCreateList}
+              disabled={isCreating}
+              className='bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 disabled:opacity-50'
+            >
+              {isCreating ? 'Criando...' : 'Criar'}
+            </button>
+          </div>
+          {createError && <p className='text-red-500 mt-2'>{createError}</p>}
+        </div>
+
+        {/* Lista de listas */}
         <div className='overflow-x-auto'>
           <table className='min-w-full bg-white border border-gray-300'>
             <thead>
@@ -93,7 +149,6 @@ const ListsContainer: React.FC = () => {
                 <th className='py-2 px-4 text-left'>Criado por</th>
                 <th className='py-2 px-4 text-left'>Atualizado em</th>
                 <th className='py-2 px-4 text-left'>Criado em</th>
-                {/* <th className='py-2 px-4 text-left'>Ações</th> */}
               </tr>
             </thead>
             <tbody>
@@ -126,14 +181,6 @@ const ListsContainer: React.FC = () => {
                     <td className='py-4 px-4'>
                       {new Date(list.created_at).toLocaleDateString()}
                     </td>
-                    {/* <td className='py-4 px-4'>
-                      <button className='text-indigo-600 hover:text-indigo-800'>
-                        <AiOutlineCheck />
-                      </button>
-                      <button className='text-red-600 hover:text-red-800 ml-4'>
-                        <AiOutlineDelete />
-                      </button>
-                    </td> */}
                   </tr>
                 ))
               ) : (
@@ -171,6 +218,37 @@ const ListsContainer: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Modal de sucesso */}
+      {showSuccessModal && (
+        <div
+          className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'
+          role='dialog'
+          aria-labelledby='modal-title'
+          aria-describedby='modal-description'
+        >
+          <div className='bg-white p-6 rounded-lg shadow-2xl transform transition-transform scale-100'>
+            <h2
+              id='modal-title'
+              className='text-2xl font-bold mb-4 text-green-600 text-center'
+            >
+              Lista criada com sucesso!
+            </h2>
+            <p
+              id='modal-description'
+              className='text-gray-600 text-center mb-6'
+            >
+              Sua nova lista foi criada e está pronta para ser utilizada.
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className='w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

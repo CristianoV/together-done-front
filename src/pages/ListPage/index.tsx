@@ -39,11 +39,17 @@ const ListContainer: React.FC = () => {
   if (!list) return <div>Lista não encontrada.</div>;
 
   const handleCreateItem = async () => {
+    if (!responsibleUser) {
+      setErrorMessage('Por favor, selecione um responsável.');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+
     try {
       await addList({
         item_name: newItemName,
         is_completed: false,
-        responsible_id: 4,
+        responsible_id: parseInt(responsibleUser), // Usando o ID do responsável
       });
 
       setNewItemName('');
@@ -222,7 +228,7 @@ const ListContainer: React.FC = () => {
                             item_id: item.item_id,
                             item_name: item.item_name,
                           });
-                          
+
                           setNewItemName(item.item_name);
                           setItemToEdit(item.item_id);
                           setIsEditModalOpen(true);
@@ -234,10 +240,10 @@ const ListContainer: React.FC = () => {
                     {item.is_completed ? (
                       <button
                         className='bg-yellow-600 text-white py-1 px-2 rounded hover:bg-yellow-700 w-20'
-                        onClick={() =>{
+                        onClick={() => {
                           console.log(item.item_id);
-                          
-                          handleUpdateStatus(item.item_id)
+
+                          handleUpdateStatus(item.item_id);
                         }}
                       >
                         Reabrir
@@ -245,10 +251,10 @@ const ListContainer: React.FC = () => {
                     ) : (
                       <button
                         className='bg-green-600 text-white py-1 px-2 rounded hover:bg-green-700 w-20'
-                        onClick={() =>{
+                        onClick={() => {
                           console.log(item.item_id);
-                          
-                          handleUpdateStatus(item.item_id)
+
+                          handleUpdateStatus(item.item_id);
                         }}
                       >
                         Concluir
@@ -290,13 +296,22 @@ const ListContainer: React.FC = () => {
               </div>
               <div className='mb-4'>
                 <label className='block text-gray-700'>Responsável:</label>
-                <input
-                  type='text'
+                <select
                   value={responsibleUser}
                   onChange={(e) => setResponsibleUser(e.target.value)}
                   className='border rounded w-full py-2 px-3'
-                  placeholder='Digite o nome do responsável'
-                />
+                >
+                  <option value=''>Selecione o responsável</option>
+                  {list.shared_lists.map((item) => {
+                    const user = item.user;
+                    return (
+                      <option key={item.user.id} value={user.id}>
+                        {item.user.firstName} {item.user.lastName}
+                      </option>
+                    );
+                  }
+                  )}
+                </select>
               </div>
               <div className='flex justify-between'>
                 <button
@@ -315,6 +330,7 @@ const ListContainer: React.FC = () => {
             </div>
           </div>
         )}
+
         {isEditModalOpen && (
           <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
             <div className='bg-white p-5 rounded shadow-lg w-96'>

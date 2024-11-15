@@ -118,3 +118,27 @@ export const useUpdateItem = (listId: string) => {
 
   return { updateItem, isMutating };
 };
+
+export const useCreateList = () => {
+  const { trigger, isMutating } = useSWRMutation(
+    '/api/lists', // Endpoint para criar uma nova lista
+    sendRequest // Função que envia a requisição
+  );
+
+  const createList = async (listName: string, isFavorite: boolean, ownerId: number) => {
+    try {
+      const payload = {
+        list_name: listName,
+        is_favorite: isFavorite,
+        owner_id: ownerId,
+      }; // Estrutura do payload necessária
+      const data = await trigger(payload); // Envia a requisição
+      return data; // Retorna os dados da resposta
+    } catch (error) {
+      console.error('Failed to create list:', error);
+      throw error; // Propaga o erro para tratamento no componente
+    }
+  };
+
+  return { createList, isMutating };
+};

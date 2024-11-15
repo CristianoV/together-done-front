@@ -6,6 +6,7 @@ import ListsPage from '../pages/ListsPage';
 import Layout from '../components/Layout.tsx';
 import { useEffect, useState } from 'react';
 import ListContainer from '../pages/ListPage/index.tsx';
+import Register from '../pages/register/index.tsx';
 
 export const AppRoutes = () => {
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ export const AppRoutes = () => {
 
       {/* Rota sem o Navbar */}
       <Route path='/login' element={<Login />} />
+      <Route path='/register' element={<Register />} />
     </Routes>
   );
 };
